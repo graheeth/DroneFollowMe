@@ -12,56 +12,7 @@ host = socket.gethostname()
 port = 12345
 
 # Bind to the port
-server_socket.bind((host, port))import socket
-import logging
-from mavlink import init_adjustment, set_relative_yaw
-
-# Setup basic logging
-logging.basicConfig(level=logging.INFO)
-
-# Constants
-HOST = socket.gethostname()  # Automatically get the local machine name
-PORT = 12345
-BACKLOG = 5  # Number of unaccepted connections before refusing new ones
-
-def handle_client_connection(client_socket):
-    try:
-        data = client_socket.recv(1024).decode('ascii')
-        logging.info(f"Received: '{data}'")
-
-        # Process commands
-        if data == 'start':
-            init_adjustment()
-        elif data.startswith('yaw'):
-            _, yaw_value_str = data.split(' ')
-            try:
-                yaw_value = float(yaw_value_str)
-                set_relative_yaw(yaw_value)
-            except ValueError:
-                logging.error(f"Invalid yaw value: {yaw_value_str}")
-        else:
-            logging.warning(f"Unrecognized command: {data}")
-
-        client_socket.send('Thank you for connecting'.encode('ascii'))
-    except Exception as e:
-        logging.exception("Error handling client connection")
-    finally:
-        client_socket.close()
-
-def start_server():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
-        server_socket.bind((HOST, PORT))
-        server_socket.listen(BACKLOG)
-        logging.info(f"Server listening on {HOST}:{PORT}")
-
-        while True:
-            client_socket, addr = server_socket.accept()
-            logging.info(f"Got a connection from {addr}")
-            handle_client_connection(client_socket)
-
-if __name__ == "__main__":
-    start_server()
-
+server_socket.bind((host, port))
 
 # Queue up to 5 requests
 server_socket.listen(5)
